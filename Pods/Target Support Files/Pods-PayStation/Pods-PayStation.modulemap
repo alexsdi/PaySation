@@ -1,0 +1,6 @@
+framework module Pods_PayStation {
+  umbrella header "Pods-PayStation-umbrella.h"
+
+  export *
+  module * { export * }
+}

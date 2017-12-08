@@ -1,0 +1,29 @@
+PODS:
+  - CocoaAsyncSocket (7.6.2)
+  - MMDrawerController (0.5.7):
+    - MMDrawerController/Core (= 0.5.7)
+    - MMDrawerController/MMDrawerBarButtonItem (= 0.5.7)
+    - MMDrawerController/MMDrawerVisualStates (= 0.5.7)
+    - MMDrawerController/Subclass (= 0.5.7)
+  - MMDrawerController/Core (0.5.7)
+  - MMDrawerController/MMDrawerBarButtonItem (0.5.7):
+    - MMDrawerController/Core
+  - MMDrawerController/MMDrawerVisualStates (0.5.7):
+    - MMDrawerController/Core
+  - MMDrawerController/Subclass (0.5.7):
+    - MMDrawerController/Core
+  - SquarePointOfSaleSDK (3.3.1)
+
+DEPENDENCIES:
+  - CocoaAsyncSocket
+  - MMDrawerController (~> 0.5.7)
+  - SquarePointOfSaleSDK
+
+SPEC CHECKSUMS:
+  CocoaAsyncSocket: 3541e024f48c54b251638ef72d51dd42808de932
+  MMDrawerController: 7a4cf8e25596bf2434e03ce50d22a8608ddee6a1
+  SquarePointOfSaleSDK: f1640fd16fe44083cd715157a5031efebc693454
+
+PODFILE CHECKSUM: 5cc1b7fc824fbbe3033e6c1f7c5433493e7d7d9b
+
+COCOAPODS: 1.3.1
