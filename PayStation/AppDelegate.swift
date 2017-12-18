@@ -12,6 +12,7 @@
 
 //Font Family Name = [AvantGarde Md BT]
 //Font Names = [["AvantGardeITCbyBT-Medium"]]
+
 import UIKit
 import SquarePointOfSaleSDK
 import Foundation
@@ -22,10 +23,11 @@ import MMDrawerController
 class AppDelegate: UIResponder, UIApplicationDelegate,MFMailComposeViewControllerDelegate {
 
     var window: UIWindow?
-
+    var arrBidder : NSMutableArray!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
         
         UIApplication.shared.statusBarStyle = .lightContent
 
@@ -34,11 +36,55 @@ class AppDelegate: UIResponder, UIApplicationDelegate,MFMailComposeViewControlle
         
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white, NSAttributedStringKey.font : UIFont(name: "AvantGardeITCbyBT-Medium", size: 18) ?? UIFont.systemFont(ofSize: 18)]
         
-        
        
+         loadBidderList()
         return true
     }
 
+    func loadBidderList(){
+        
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true) as NSArray
+        let documentsDirectory = paths[0] as! String
+        let path = (documentsDirectory as NSString).appendingPathComponent("Bidder.plist")
+        
+       
+        let fileManager = FileManager.default
+        
+        if(!fileManager.fileExists(atPath: path)) {
+            
+            if let bundlePath = Bundle.main.path(forResource: "Bidder", ofType: "plist") {
+                
+                do {
+                    try fileManager.copyItem(atPath: bundlePath, toPath: path)
+                    
+                    self.arrBidder = NSMutableArray(contentsOfFile: path)!
+                    
+                    
+                } catch _ {
+                    print("error")
+                }
+                
+            } else {
+                
+                print("error")
+            }
+        } else {
+
+            self.arrBidder = NSMutableArray(contentsOfFile: path)!
+        }
+        
+        
+    }
+    
+    
+    func saveBidderList(){
+        
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true) as NSArray
+        let documentsDirectory = paths[0] as! String
+        let path = (documentsDirectory as NSString).appendingPathComponent("Bidder.plist")
+        self.arrBidder.write(toFile: path, atomically: false)
+        
+    }
     
     func makePayment(userInfo : String){
 
@@ -49,6 +95,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate,MFMailComposeViewControlle
             let alertView = UIAlertController.init(title: "App not installed!", message: "\"Point of Sale\" App is not installed in on your device ", preferredStyle: UIAlertControllerStyle.alert)
             alertView.addAction(UIAlertAction.init(title: "Install", style: UIAlertActionStyle.default, handler: { (alertview) in
                 
+                let appUrl = URL(string: "https://itunes.apple.com/us/app/square-point-of-sale-pos/id335393788?mt=8")
+                UIApplication.shared.open(appUrl!, options: [:], completionHandler: nil)
+                
+
             }))
             alertView.addAction(UIAlertAction.init(title: "Cancel", style: UIAlertActionStyle.cancel, handler: { (alertview) in
                 
@@ -164,6 +214,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate,MFMailComposeViewControlle
          
     
     }
+    
+    func showAlert(title : String, message : String){
+        
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
+        appDelegate.window?.rootViewController?.present(alert, animated: true, completion: nil)
+    }
+    
+    func showAlert(message : String){
+        
+        let alert = UIAlertController(title: "PayStation", message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
+        appDelegate.window?.rootViewController?.present(alert, animated: true, completion: nil)
+    }
+    
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.

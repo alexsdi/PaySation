@@ -45,8 +45,47 @@ class PSCheckOutInfo: UIViewController {
         self.navigationController?.popViewController(animated: true)
         
     }
+    
     @IBAction func onSave(_ sender: Any) {
         
+        if(validateFileds() == true){
+            
+            dictBidderObj?.setValue(txtName.text?.trim(), forKey: "name")
+            dictBidderObj?.setValue(txtBidder.text?.trim(), forKey: "id")
+            dictBidderObj?.setValue(txtEmail.text?.trim(), forKey: "email")
+            dictBidderObj?.setValue(txtAmount.text?.trim(), forKey: "amount")
+            
+            appDelegate.saveBidderList()
+            self.navigationController?.popViewController(animated: true)
+            
+        }
+        
+    }
+    
+    func validateFileds()->Bool{
+        
+        if(txtName.text?.trim().characters.count == 0){
+            txtName.placeHolderColor = UIColor.red
+            txtName.placeholder = "Enter name"
+            return false
+        }else if(txtEmail.text?.trim().characters.count == 0){
+            txtEmail.placeHolderColor = UIColor.red
+            txtEmail.placeholder = "Enter email"
+            return false
+        }else if(txtBidder.text?.trim().characters.count == 0){
+            txtBidder.placeHolderColor = UIColor.red
+            txtBidder.placeholder = "Enter bidder"
+            return false
+        }else if(txtAmount.text?.trim().characters.count == 0){
+            txtAmount.placeHolderColor = UIColor.red
+            txtAmount.placeholder = "Enter ammount"
+            return false
+        }else if(!((txtEmail.text?.isValidEmail())!)){
+            appDelegate.showAlert(message: "Invalid Email Id")
+            return false
+        }
+        
+        return true
     }
     
     /*

@@ -8,29 +8,82 @@
 
 import UIKit
 
-class PSCheckInVC: UIViewController,UITableViewDelegate, UITableViewDataSource {
+class PSCheckInVC: UIViewController,UITableViewDelegate, UITableViewDataSource,UISearchControllerDelegate,UISearchResultsUpdating {
 
     @IBOutlet weak var btnAddBidder: UIBarButtonItem!
     @IBOutlet weak var btnSync: UIButton!
-    @IBOutlet weak var txtSearch: UISearchBar!
+    
+    
     @IBOutlet weak var tblVw: UITableView!
     
     var checkInType : Int!
     
     var arrAttendanceList = [String: AnyObject]()
+    var arrAttendanceDict = NSMutableArray()
+    
     var sortedKeys = [String]()
+    let searchController = UISearchController(searchResultsController: nil)
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         tblVw.delegate = self
         tblVw.dataSource = self
         
+        let barButtonBackStr = "+ Bidder"
+        
+        let attributedBarButtonBackStr = NSMutableAttributedString(string: barButtonBackStr as String)
+        
+        attributedBarButtonBackStr.addAttribute(NSAttributedStringKey.font,
+                                                value: UIFont(
+                                                    name: "AvantGardeITCbyBT-Medium",
+                                                    size: 18.0)!,
+                                                range: NSRange(
+                                                    location:0,
+                                                    length:barButtonBackStr.characters.count))
+        
+        attributedBarButtonBackStr.addAttribute(NSAttributedStringKey.font,
+                                                value: UIFont(
+                                                    name: "AvantGardeITCbyBT-Medium",
+                                                    size: 24.0)!,
+                                                range: NSRange(
+                                                    location:0,
+                                                    length:1))
+        let label = UILabel()
+        label.textColor = UIColor.white
+        label.attributedText = attributedBarButtonBackStr
+        label.sizeToFit()
+        
+        btnAddBidder.customView = label
+
+        
+        loadAttendanceList()
+        
+        
         tblVw.sectionIndexColor = UIColor.lightGray
         tblVw.sectionIndexBackgroundColor = UIColor.clear
         
-         loadAttendanceList()
+        searchController.searchResultsUpdater = self
+        searchController.hidesNavigationBarDuringPresentation = true
+        searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search"
         
-        // Do any additional setup after loading the view.
+        /*
+        if #available(iOS 11.0, *) {
+            navigationItem.searchController = searchController
+            
+        } else {
+            tblVw.tableHeaderView = searchController.searchBar
+        }
+        */
+        tblVw.tableHeaderView = searchController.searchBar
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+       
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -46,33 +99,49 @@ class PSCheckInVC: UIViewController,UITableViewDelegate, UITableViewDataSource {
              self.title = "Check Out"
         }
     }
-    @IBAction func onSyncWithPayStation(_ sender: Any) {
-    }
-    func loadAttendanceList()
-    {
-        let arrNames = ["Ann Murphy", "Ashley Ruiz", "Britanny Garcia", "Bobby Hunt", "Brandon Chen", "Christine Hamilton", "Daniel Jackson", "Diana Harvey", "Garvy Mediana", "Gerald foster", "Hannah", "Yewande", "Zaheer"]
-        
-        let arrAttendanceDict = NSMutableArray()
-        
-        for i in 0..<arrNames.count
-        {
-            let dictAttendance = NSMutableDictionary()
-            dictAttendance.setValue(arrNames[i], forKey: "name")
-            dictAttendance.setValue("32154", forKey: "id")
-            dictAttendance.setValue("alex@test.com", forKey: "email")
-            if(i % 2 == 0){
-                dictAttendance.setValue(false, forKey: "isSelect")
-            }else{
-                dictAttendance.setValue(true, forKey: "isSelect")
-
-            }
-
-            arrAttendanceDict.add(dictAttendance)
+    //Search text
+    func updateSearchResults(for searchController: UISearchController) {
+        if let searchText = searchController.searchBar.text, !searchText.isEmpty {
+            arrAttendanceList.removeAll()
+            let predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchText)
+            let arrFilter = self.arrAttendanceDict.filtered(using: predicate)
+            let arrFilterValue = NSMutableArray(array: arrFilter)
+            setAlphaptes(arrVal: arrFilterValue)
+        } else {
+            loadAttendanceList()
         }
         
-        for i in 0..<arrAttendanceDict.count
+        
+    }
+    @IBAction func onSyncWithPayStation(_ sender: Any) {
+    }
+    
+    
+    
+    func loadAttendanceList()
+    {
+        
+        if(arrAttendanceDict.count > 0){
+            arrAttendanceDict.removeAllObjects()
+        }
+  
+
+        for dict in appDelegate.arrBidder{
+            
+             arrAttendanceDict.add(dict)
+            
+        }
+        
+        arrAttendanceList.removeAll()
+        setAlphaptes(arrVal: arrAttendanceDict)
+        
+    }
+    
+    func setAlphaptes(arrVal : NSMutableArray){
+        
+        for i in 0..<arrVal.count
         {
-            let dict = arrAttendanceDict.object(at: i) as? NSDictionary
+            let dict = arrVal.object(at: i) as? NSDictionary
             let fullName = dict?.value(forKey: "name") as? String
             
             var key: String = "#"
@@ -102,7 +171,6 @@ class PSCheckInVC: UIViewController,UITableViewDelegate, UITableViewDataSource {
         
         tblVw.reloadData()
     }
-    
     func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
         
         tableView.scrollToRow(at: IndexPath(row: 0, section: index), at: UITableViewScrollPosition.top, animated: false)
@@ -127,8 +195,10 @@ class PSCheckInVC: UIViewController,UITableViewDelegate, UITableViewDataSource {
     }
     
     @IBAction func onAddBidder(_ sender: Any) {
+       // let addBidVc = self.storyboard?.instantiateViewController(withIdentifier: "PSAddBidderNew") as! PSAddBidderNew
+        
         let addBidVc = self.storyboard?.instantiateViewController(withIdentifier: "PSAddBidder") as! PSAddBidder
-        addBidVc.bidderType = 1
+            addBidVc.bidderType = 1
         self.navigationController?.pushViewController(addBidVc, animated: true)
         
     }
@@ -137,53 +207,46 @@ class PSCheckInVC: UIViewController,UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
-        if let attendanceForSection = arrAttendanceList[sortedKeys[section]]
-        {
-            return attendanceForSection.count
-        }
         
-        return 0
+            if let attendanceForSection = arrAttendanceList[sortedKeys[section]]
+            {
+                return attendanceForSection.count
+            }
+            return 0
+        
     }
     
     // create a cell for each table view row
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        // create a new cell if needed or reuse an old one
-       let cell = tableView.dequeueReusableCell(withIdentifier: "TCellCheckList") as? TCellCheckList
-        
+
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TCellCheckList") as? TCellCheckList
         let arrAttendance = arrAttendanceList[sortedKeys[indexPath.section]] as? NSArray
         let dictAttendance = arrAttendance?.object(at: indexPath.row) as? NSMutableDictionary
-        
- 
-        let isSelect = dictAttendance?.value(forKey: "isSelect") as? Bool
-        cell?.btnSelect.isSelected = false
-        if isSelect == true
-        {
-            cell?.btnSelect.isSelected = true
-        }
         cell?.lblBidAmount.text = ""
         
         if(checkInType == 2){
             
-            cell?.lblBidAmount.text = "$1235"
-            
+            if let amount = dictAttendance?.value(forKey: "amount") as? String{
+                cell?.lblBidAmount.text = "$\(amount)"
+            }
+          
         }
         cell?.lblName.text = dictAttendance?.value(forKey: "name") as? String
         cell?.lblIdNum.text = dictAttendance?.value(forKey: "id") as? String
-        
-        
+
         return cell!
+
     }
     
     // method to run when table view cell is tapped
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        searchController.searchBar.text = ""
+        self.searchController.isActive = false
         
         let arrAttendance = arrAttendanceList[sortedKeys[indexPath.section]] as? NSArray
         let dictAttendance = arrAttendance?.object(at: indexPath.row) as? NSMutableDictionary
-        
-        
+    
         if(checkInType == 1){
-            
             
             let pSAddBidder = self.storyboard?.instantiateViewController(withIdentifier: "PSAddBidder") as! PSAddBidder
             pSAddBidder.dictBidderObj = dictAttendance
@@ -198,6 +261,7 @@ class PSCheckInVC: UIViewController,UITableViewDelegate, UITableViewDataSource {
             
         }
         
+     
     }
     
     /*
@@ -211,3 +275,4 @@ class PSCheckInVC: UIViewController,UITableViewDelegate, UITableViewDataSource {
     */
 
 }
+

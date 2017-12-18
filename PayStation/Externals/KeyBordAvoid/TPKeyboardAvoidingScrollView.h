@@ -13,6 +13,9 @@
 @optional
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
+-(void)textFieldDidBeginEditing:(UITextField *)textField;
+-(void)textFieldDidEndEditing:(UITextField *)textField;
+
 
 @end
 

@@ -13,6 +13,7 @@ class PSHomeVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.navigationController?.interactivePopGestureRecognizer?.delegate = nil
         // Do any additional setup after loading the view.
     }
 
@@ -29,9 +30,11 @@ class PSHomeVC: UIViewController {
         
     }
     @IBAction func onmenu(_ sender: Any) {
-        self.mm_drawerController.toggle(.left, animated: true, completion: nil)
+        
+       // self.mm_drawerController.toggle(.left, animated: true, completion: nil)
         
     }
+    
     @IBAction func onCheckIn(_ sender: Any) {
         
         let pSCheckInVC = self.storyboard?.instantiateViewController(withIdentifier: "PSCheckInVC") as! PSCheckInVC

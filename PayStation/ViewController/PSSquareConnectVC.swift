@@ -16,10 +16,18 @@ class PSSquareConnectVC: UIViewController,UIWebViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        loadMenuPage()
+        return
+        
         webVw.delegate = self
         webVw.loadRequest(URLRequest(url: URL(string: "https://connect.squareup.com/oauth2/authorize?client_id=sq0idp-BdDVP0ixlR04pEk_BCqJ1Q")!))
-        
+        webVw.scrollView.contentOffset = CGPoint(x: 0, y: 0)
+        webVw.backgroundColor = UIColor.white
+        webVw.scrollView.backgroundColor = UIColor.white
         showSpinner()
+        
+        
         
         activityView = UIActivityIndicatorView.init(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
         let barButton : UIBarButtonItem = UIBarButtonItem.init(customView: activityView!)

@@ -83,6 +83,21 @@
     return YES;
 }
 
+-(void)textFieldDidBeginEditing:(UITextField *)textField{
+    if([self.dele respondsToSelector:@selector(textFieldDidBeginEditing:)]){
+        [self.dele textFieldDidBeginEditing:textField];
+    }
+    
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField{
+    
+    if([self.dele respondsToSelector:@selector(textFieldDidEndEditing:)]){
+        [self.dele textFieldDidEndEditing:textField];
+    }
+    
+}
+
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
     
     
@@ -100,5 +115,6 @@
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(TPKeyboardAvoiding_assignTextDelegateForViewsBeneathView:) object:self];
     [self performSelector:@selector(TPKeyboardAvoiding_assignTextDelegateForViewsBeneathView:) withObject:self afterDelay:0.1];
 }
+
 
 @end

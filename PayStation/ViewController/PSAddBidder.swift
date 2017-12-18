@@ -10,8 +10,6 @@ import UIKit
 
 class PSAddBidder: UIViewController,TPKeyboardAvoidingScrollViewDelege {
 
- 
-    
     @IBOutlet weak var txtBidder: UITextField!
     @IBOutlet weak var txtEmail: UITextField!
     @IBOutlet weak var txtName: UITextField!
@@ -65,14 +63,52 @@ class PSAddBidder: UIViewController,TPKeyboardAvoidingScrollViewDelege {
     }
     @IBAction func onSaveSkip(_ sender: Any) {
         
-        //appDelegate.makePayment(userInfo: "TestId")
-        self.navigationController?.popViewController(animated: true)
+        if(validateFileds() == true){
+            
+            if(bidderType == 1){
+                let dictBidder = NSMutableDictionary()
+                dictBidder.setValue(txtName.text, forKey: "name")
+                dictBidder.setValue(txtBidder.text, forKey: "id")
+                dictBidder.setValue(txtEmail.text, forKey: "email")
+                appDelegate.arrBidder.add(dictBidder)
+            }else{
+                
+                dictBidderObj?.setValue(txtName.text?.trim(), forKey: "name")
+                dictBidderObj?.setValue(txtBidder.text?.trim(), forKey: "id")
+                dictBidderObj?.setValue(txtEmail.text?.trim(), forKey: "email")
+  
+            }
+            
+            appDelegate.saveBidderList()
+            self.navigationController?.popViewController(animated: true)
+        }
 
     }
     
     @IBAction func onSaveSwipe(_ sender: Any) {
-        appDelegate.makePayment(userInfo: "TestId")
-       // self.navigationController?.popViewController(animated: true)
+        
+         if(validateFileds() == true){
+            if(bidderType == 1){
+                let dictBidder = NSMutableDictionary()
+                dictBidder.setValue(txtName.text, forKey: "name")
+                dictBidder.setValue(txtBidder.text, forKey: "id")
+                dictBidder.setValue(txtEmail.text, forKey: "email")
+                appDelegate.arrBidder.add(dictBidder)
+            }else{
+                
+                dictBidderObj?.setValue(txtName.text?.trim(), forKey: "name")
+                dictBidderObj?.setValue(txtBidder.text?.trim(), forKey: "id")
+                dictBidderObj?.setValue(txtEmail.text?.trim(), forKey: "email")
+                
+            }
+     
+        appDelegate.saveBidderList()
+        
+        //Check point of scale insall or not
+            
+       // appDelegate.makePayment(userInfo: "TestId")
+        self.navigationController?.popViewController(animated: true)
+        }
 
     }
     
@@ -87,6 +123,29 @@ class PSAddBidder: UIViewController,TPKeyboardAvoidingScrollViewDelege {
         
     }
     
+    
+    
+    func validateFileds()->Bool{
+        
+        if(txtName.text?.trim().characters.count == 0){
+            txtName.placeHolderColor = UIColor.red
+            txtName.placeholder = "Enter name"
+            return false
+        }else if(txtEmail.text?.trim().characters.count == 0){
+            txtEmail.placeHolderColor = UIColor.red
+            txtEmail.placeholder = "Enter email"
+            return false
+        }else if(txtBidder.text?.trim().characters.count == 0){
+            txtBidder.placeHolderColor = UIColor.red
+            txtBidder.placeholder = "Enter bidder"
+            return false
+        }else if(!((txtEmail.text?.isValidEmail())!)){
+            appDelegate.showAlert(message: "Invalid Email Id")
+            return false
+        }
+
+        return true
+    }
     /*
     // MARK: - Navigation
 
