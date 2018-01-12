@@ -54,7 +54,7 @@ class PSCheckInVC: UIViewController,UITableViewDelegate, UITableViewDataSource,U
         label.attributedText = attributedBarButtonBackStr
         label.sizeToFit()
         
-        btnAddBidder.customView = label
+      //  btnAddBidder.customView = label
 
         
         loadAttendanceList()
